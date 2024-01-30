@@ -55,7 +55,10 @@
                         </StackPanel>
                         <StackPanel Orientation="Vertical" Margin="20" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Column="2" Grid.RowSpan="4">
                             <TextBlock Text="Скидка" HorizontalAlignment="Center" Margin="10"></TextBlock>
-                            <TextBlock Text="2 %" HorizontalAlignment="Center" FontSize="50"></TextBlock>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding ProductDiscountAmount}" HorizontalAlignment="Center" FontSize="50"></TextBlock>
+                                <TextBlock Text=" %" HorizontalAlignment="Center" FontSize="50"/>
+                            </StackPanel>
                         </StackPanel> 
                         
                         
