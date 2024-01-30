@@ -15,6 +15,20 @@ namespace Anvarov41Razmer
     
     public partial class Anvarov41Entities : DbContext
     {
+
+        private static Anvarov41Entities _context;
+
+        public static Anvarov41Entities GetContext()
+        {
+            if(_context == null)
+            {
+                _context = new Anvarov41Entities();
+            }
+
+            return _context;
+        }
+
+
         public Anvarov41Entities()
             : base("name=Anvarov41Entities")
         {

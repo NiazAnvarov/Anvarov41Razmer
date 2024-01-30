@@ -23,6 +23,10 @@ namespace Anvarov41Razmer
         public ProductPage()
         {
             InitializeComponent();
+
+            List<Product> currentProducts = Anvarov41Entities.GetContext().Product.ToList();
+            ProductListView.ItemsSource = currentProducts;
+
         }
 
         private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

@@ -12,5 +12,9 @@
             <Setter Property="FontSize" Value="20"/>
             <Setter Property="FontFamily" Value="Comic Sans MS"/>
         </Style>
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="Comic Sans MS"/>
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
     </Application.Resources>
 </Application>
