@@ -13,11 +13,44 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="37"></RowDefinition>
+            <RowDefinition Height="8*"/>
             <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <ListView Name="ProductListView" Grid.Row="2">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="кол-во "/>
+                <TextBlock Text=""/>
+                <TextBlock Text=" из "/>
+                <TextBlock Name="MCount"/>
+                <TextBlock Text=" поиск по наименованию"/>
+            </StackPanel>
+            <TextBox Name="Search" TextChanged="Search_TextChanged" Width="auto"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <RadioButton Content=" по возрастанию стоимости" GroupName="Sort" Name="RButtonUp" Checked="RButtonUp_Checked"/>
+            <RadioButton Content=" по убыванию стоимости" GroupName="Sort" Name="RButtonDown" Checked="RButtonDown_Checked"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="2" HorizontalAlignment="Center">
+            <TextBlock Text="фильтрация по скидке"/>
+            <ComboBox Name="Filter" SelectionChanged="Filter_SelectionChanged" Margin="5">
+                <TextBlock Text="Все"/>
+                <TextBlock Text="0-9,99%"/>
+                <TextBlock Text="10-14,99"/>
+                <TextBlock Text="15 и более"/>
+            </ComboBox>
+        </StackPanel>
+        
+        <ListView Name="ProductListView" Grid.ColumnSpan="3" Grid.Row="2" Grid.RowSpan="2">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -26,14 +59,14 @@
                             <ColumnDefinition Width="700"/>
                             <ColumnDefinition/>
                         </Grid.ColumnDefinitions>
-                        
+
                         <Grid.RowDefinitions>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                             <RowDefinition/>
                         </Grid.RowDefinitions>
-                        
+
                         <Image Width="200" Grid.RowSpan="4" Grid.Column="0" HorizontalAlignment="Center">
                             <Image.Source>
                                 <Binding Path="ProductPhoto">
@@ -59,9 +92,9 @@
                                 <TextBlock Text="{Binding ProductDiscountAmount}" HorizontalAlignment="Center" FontSize="50"></TextBlock>
                                 <TextBlock Text=" %" HorizontalAlignment="Center" FontSize="50"/>
                             </StackPanel>
-                        </StackPanel> 
-                        
-                        
+                        </StackPanel>
+
+
 
                     </Grid>
                 </DataTemplate>
