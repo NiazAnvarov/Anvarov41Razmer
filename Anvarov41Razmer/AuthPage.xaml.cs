@@ -28,7 +28,7 @@ namespace Anvarov41Razmer
             InitializeComponent();
         }
 
-        private void LoginBtn_Click(object sender, RoutedEventArgs e)
+        private async void LoginBtn_Click(object sender, RoutedEventArgs e)
         {
             
             string login = ULogin.Text;
@@ -51,11 +51,7 @@ namespace Anvarov41Razmer
             {
                 MessageBox.Show("Введены неверные данные");
                 LoginBtn.IsEnabled = false;
-                DateTime time = DateTime.Now.AddSeconds(10);
-                while (DateTime.Now != time)
-                {
-
-                }
+                await Task.Delay(10000);
                 LoginBtn.IsEnabled = true;
 
 
@@ -65,6 +61,8 @@ namespace Anvarov41Razmer
         private void GuestBtn_Click(object sender, RoutedEventArgs e)
         {
             Manager.MainFrame.Navigate(new ProductPage(null));
+            ULogin.Text = "";
+            UPassword.Text = "";
         }
     }
 }
