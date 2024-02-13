@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Anvarov41Razmer"
         mc:Ignorable="d"
-        Title="Анваров 41 размер" FontFamily="Comic Sans MS" Height="800" Width="1100" MinHeight="450" MinWidth="1100" Icon="Resources/icon.ico" >
+        Title="Анваров 41 размер" FontFamily="Comic Sans MS" Height="800" Width="1200" MinHeight="450" MinWidth="1200" Icon="Resources/icon.ico" >
     <Grid Background="#FFFFCC99">
         <Grid.RowDefinitions>
             <RowDefinition Height="100"></RowDefinition>

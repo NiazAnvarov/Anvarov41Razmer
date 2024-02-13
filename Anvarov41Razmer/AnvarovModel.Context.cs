@@ -27,8 +27,6 @@ namespace Anvarov41Razmer
 
             return _context;
         }
-
-
         public Anvarov41Entities()
             : base("name=Anvarov41Entities")
         {
