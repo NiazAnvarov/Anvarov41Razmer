@@ -20,10 +20,23 @@ namespace Anvarov41Razmer
     /// </summary>
     public partial class ProductPage : Page
     {
+        User currentUser;
+        int newOrderId;
+
+        List<OrderProduct> selectedOrderProducts = new List<OrderProduct>();
+        List<Product> selectedProducts = new List<Product>();
+
+        
 
         public ProductPage(User user)
         {
             InitializeComponent();
+            
+            if(selectedProducts.Count == 0)
+            {
+                BtnOrder.Visibility = Visibility.Hidden;
+            }
+            currentUser = user;
             if(user != null)
             {
                 FIOTB.Text = user.UserSurname + " " + user.UserName + " " + user.UserPatronymic;
@@ -45,13 +58,19 @@ namespace Anvarov41Razmer
                 URole.Visibility = Visibility.Hidden;
                 RoleTB.Visibility = Visibility.Hidden;
             }
-
             
 
             List<Product> currentProducts = Anvarov41Entities.GetContext().Product.ToList();
             ProductListView.ItemsSource = currentProducts;
+            List<Order> allOrder = Anvarov41Entities.GetContext().Order.ToList();
+            List<int> allOrderId = new List<int>();
+            foreach(var p in allOrder.Select(x => $"{x.OrderID}").ToList())
+            {
+                allOrderId.Add(Convert.ToInt32(p));
+            }
 
-            
+            newOrderId = allOrderId.Max()+1;
+
             MCount.Text = Anvarov41Entities.GetContext().Product.ToList().Count.ToString();
             Filter.SelectedIndex = 0;
 
@@ -63,7 +82,12 @@ namespace Anvarov41Razmer
         {
             var currentProducts = Anvarov41Entities.GetContext().Product.ToList();
 
-            if(Filter.SelectedIndex == 0)
+            if (selectedProducts.Count > 0)
+            {
+                BtnOrder.Visibility = Visibility.Visible;
+            }
+
+            if (Filter.SelectedIndex == 0)
             {
                 currentProducts = currentProducts.Where(p => p.ProductDiscountAmount >= 0 && p.ProductDiscountAmount <= 100).ToList();
             }
@@ -97,6 +121,12 @@ namespace Anvarov41Razmer
             CurAmount.Text = currentProducts.Count.ToString();
 
             ProductListView.ItemsSource = currentProducts;
+            if(selectedProducts.Count == 0)
+            {
+                BtnOrder.Visibility = Visibility.Hidden;
+            }
+
+            
 
         }
 
@@ -122,6 +152,49 @@ namespace Anvarov41Razmer
 
         private void Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            Update();
+        }
+
+        private void AddInOrder_Click(object sender, RoutedEventArgs e)
+        {
+            if(ProductListView.SelectedIndex >= 0)
+            {
+                var prod = ProductListView.SelectedItem as Product;
+                
+                //int newOrderID = selectedOrderProducts.Last().Order.OrderID;
+                var newOrderProd = new OrderProduct();
+                newOrderProd.OrderID = newOrderId;
+
+                newOrderProd.ProductArticleNumber = prod.ProductArticleNumber;
+                newOrderProd.Amount = 1;
+                var selOP = selectedOrderProducts.Where(p => Equals(p.ProductArticleNumber, prod.ProductArticleNumber));
+
+                if(selOP.Count() == 0)
+                {
+                    selectedOrderProducts.Add(newOrderProd);
+                    selectedProducts.Add(prod);
+                }
+                else
+                {
+                    foreach(OrderProduct p in selectedOrderProducts)
+                    {
+                        if (p.ProductArticleNumber == prod.ProductArticleNumber)
+                            p.Amount++;
+                    }
+                }
+
+                BtnOrder.Visibility = Visibility.Visible;
+                ProductListView.SelectedIndex = -1;
+
+                Update();
+
+            }
+        }
+
+        private void BtnOrder_Click(object sender, RoutedEventArgs e)
+        {
+            OrderWindow window = new OrderWindow(selectedOrderProducts, selectedProducts, currentUser);
+            window.ShowDialog();
             Update();
         }
     }
