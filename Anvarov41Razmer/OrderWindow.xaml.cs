@@ -14,9 +14,6 @@ using System.Windows.Shapes;
 
 namespace Anvarov41Razmer
 {
-    /// <summary>
-    /// Логика взаимодействия для OrderWindow.xaml
-    /// </summary>
     public partial class OrderWindow : Window
     {
         List<OrderProduct> selectedOrderProducts = new List<OrderProduct>();
@@ -24,18 +21,21 @@ namespace Anvarov41Razmer
         private Order currentOrder = new Order();
         //private OrderProduct orderOrderProduct = new OrderProduct();
         User currentUser;
-        private double Cost = 0; 
-        
+        private double Cost = 0;
+
         private int SetDeliveryDay(List<Product> products)
         {
 
-            int k = 0;
+            bool DeliveryStatus = false;
             foreach(var p in products)
             {
-                k += p.Quantity;
+                if(p.inStock <= 3)
+                {
+                    DeliveryStatus = true;
+                }
             }
 
-            if (k <= 3)
+            if (DeliveryStatus)
                 return 6;
             else
                 return 3;
@@ -49,12 +49,12 @@ namespace Anvarov41Razmer
             Cost = 0;
             var currentPickups = Anvarov41Entities.GetContext().PickUpPoint.ToList();
             //selectedOrderProducts = Anvarov41Entities.GetContext().OrderProduct.ToList();
-            PickupCombo.ItemsSource = currentPickups.Select(x => $"{x.PickUpPointIndex}, {x.City}, {x.Street}, {x.House}");
+            PickupCombo.ItemsSource = currentPickups.Select(x => $"{x.PickUpPointIndex}, {x.City}, {x.Street}, {x.House}"); //вывод информации о пункте выдачи
             PickupCombo.SelectedIndex = 0;
-            int currentID = selectedOrderProducts.First().OrderID;
+            int currentID = selectedOrderProducts.First().OrderID; //определение номера текущего заказа
             currentOrder.OrderID = currentID;
 
-
+            //Рандомный код получения
             List<Order> allOrderCodes = Anvarov41Entities.GetContext().Order.ToList();
             List<int> OrderCodes = new List<int>();
             foreach (var p in allOrderCodes.Select(x => $"{x.OrderReceiveCode}").ToList())
@@ -73,14 +73,10 @@ namespace Anvarov41Razmer
                 }
             }
             
-
-            TBOrderID.Text = currentID.ToString();
-
-            ProductListView.ItemsSource = selectedProducts;
-
+            
             foreach (Product p in selectedProducts)
             {
-                p.Quantity = 1;
+                p.Quantity = 1;//Quantity - столбец таблицы product которой нет в бд
                 foreach (OrderProduct q in selectedOrderProducts)
                 {
                     if (p.ProductArticleNumber == q.ProductArticleNumber)
@@ -89,20 +85,29 @@ namespace Anvarov41Razmer
                     }
                 }
             }
+            
 
             this.selectedOrderProducts = selectedOrderProducts;
             this.selectedProducts = selectedProducts;
-            OrderDP.Text = DateTime.Now.ToString();
-            OrderDD.Text = DateTime.Now.AddDays(SetDeliveryDay(selectedProducts)).ToString();
-            
 
-            for(int i = 0; i <selectedProducts.Count; i++)
+
+            //определение общей стоимости заказа
+            for (int i = 0; i <selectedProducts.Count; i++)
             {
                 Cost += (Convert.ToDouble(selectedProducts[i].ProductCost) - Convert.ToDouble(selectedProducts[i].ProductCost) * Convert.ToDouble(selectedProducts[i].ProductDiscountAmount)/100) * selectedProducts[i].Quantity;
             }
 
             TotalCost.Text = Cost.ToString();
 
+            //дата формирования заказа и дата доставки
+            OrderDP.Text = DateTime.Now.ToString();
+            OrderDD.Text = DateTime.Now.AddDays(SetDeliveryDay(selectedProducts)).ToString();
+
+            TBOrderID.Text = currentID.ToString();
+            ProductListView.ItemsSource = selectedProducts;
+
+
+            //вывод ФИО текущего польлзователя 
             if (user != null)
             {
                 currentOrder.OrderClient = user.UserID;
@@ -120,23 +125,23 @@ namespace Anvarov41Razmer
         {
             Cost = 0;
             var prod = (sender as Button).DataContext as Product;
-
             prod.Quantity++;
             var selectedOP = selectedOrderProducts.FirstOrDefault(p => p.ProductArticleNumber == prod.ProductArticleNumber);
             int index = selectedOrderProducts.IndexOf(selectedOP);
             selectedOrderProducts[index].Amount++;
-            if (prod.ProductQuantityInStock > 0)
-            {
-                prod.ProductQuantityInStock--;
-            }
+            //if (prod.ProductQuantityInStock > 0)
+            //{
+            //    prod.ProductQuantityInStock--;
+            //}
             ProductListView.Items.Refresh();
             for (int i = 0; i < selectedProducts.Count; i++)
             {
                 Cost += (Convert.ToDouble(selectedProducts[i].ProductCost) - Convert.ToDouble(selectedProducts[i].ProductCost) * Convert.ToDouble(selectedProducts[i].ProductDiscountAmount) / 100) * selectedProducts[i].Quantity;
             }
-            
+
             TotalCost.Text = Cost.ToString();
             OrderDD.Text = DateTime.Now.AddDays(SetDeliveryDay(selectedProducts)).ToString();
+            
 
         }
 
@@ -147,14 +152,14 @@ namespace Anvarov41Razmer
             Cost = 0;
             var selectedOP = selectedProducts.FirstOrDefault(p => p.ProductArticleNumber == prod.ProductArticleNumber);
             int index = selectedProducts.IndexOf(selectedOP);
-            
+
             if (prod.Quantity == 0)
             {
                 selectedOrderProducts[index].Amount = 0;
                 var pr = ProductListView.SelectedItem as Product;
                 selectedOrderProducts.RemoveAt(index);
                 selectedProducts.RemoveAt(index);
-                if(ProductListView.Items.Count == 0)
+                if (ProductListView.Items.Count == 0)
                 {
                     this.Close();
                 }
@@ -162,8 +167,8 @@ namespace Anvarov41Razmer
             else
             {
                 selectedOrderProducts[index].Amount--;
-                if(this.selectedProducts[index].ProductQuantityInStock > prod.Quantity)
-                    prod.ProductQuantityInStock++;
+                //if (this.selectedProducts[index].ProductQuantityInStock > prod.Quantity)
+                //    prod.ProductQuantityInStock++;
             }
             for (int i = 0; i < selectedProducts.Count; i++)
             {
@@ -172,10 +177,13 @@ namespace Anvarov41Razmer
             OrderDD.Text = DateTime.Now.AddDays(SetDeliveryDay(selectedProducts)).ToString();
             TotalCost.Text = Cost.ToString();
             ProductListView.Items.Refresh();
+            
         }
 
         private void BtnDelete_Click(object sender, RoutedEventArgs e)
         {
+
+
             var prod = (sender as Button).DataContext as Product;
             prod.Quantity = 0;
             var selectedOP = selectedProducts.FirstOrDefault(p => p.ProductArticleNumber == prod.ProductArticleNumber);
@@ -204,9 +212,12 @@ namespace Anvarov41Razmer
             currentOrder.OrderDate = DateTime.Now;
             currentOrder.OrderDeliveryDate = DateTime.Now.AddDays(SetDeliveryDay(selectedProducts));
             currentOrder.OrderStatus = "Новый";
-            for(int i = 0; i<selectedProducts.Count; i++)
+            for (int i = 0; i < selectedProducts.Count; i++)
             {
-                selectedProducts[i].ProductQuantityInStock-= selectedOrderProducts[i].Amount;
+                if (selectedProducts[i].ProductQuantityInStock >= selectedOrderProducts[i].Amount)
+                    selectedProducts[i].ProductQuantityInStock -= selectedOrderProducts[i].Amount;
+                else
+                    selectedProducts[i].ProductQuantityInStock = 0;
             }
             foreach (var p in selectedOrderProducts)
             {
@@ -219,7 +230,7 @@ namespace Anvarov41Razmer
             {
                 Anvarov41Entities.GetContext().SaveChanges();
                 MessageBox.Show("Информация сохранена");
-                
+
             }
             catch (Exception ex)
             {

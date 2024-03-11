@@ -104,7 +104,7 @@
                         <Button Name="BtnDelete" Click="BtnDelete_Click" Content="Удалить" Grid.Column="2" Grid.Row="4" />
                         <StackPanel Orientation="Horizontal" Grid.Column="2" Grid.Row="5" HorizontalAlignment="Center">
                             <TextBlock Text="В наличии "></TextBlock>
-                            <TextBlock Text="{Binding ProductQuantityInStock}"/>
+                            <TextBlock Text="{Binding inStock}"/>
                             <TextBlock Text=" шт."/>
                         </StackPanel>
                         
