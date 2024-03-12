@@ -230,7 +230,8 @@ namespace Anvarov41Razmer
             {
                 Anvarov41Entities.GetContext().SaveChanges();
                 MessageBox.Show("Информация сохранена");
-
+                selectedOrderProducts.Clear();
+                selectedProducts.Clear();
             }
             catch (Exception ex)
             {

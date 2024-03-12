@@ -132,7 +132,7 @@ namespace Anvarov41Razmer
 
         private void Page_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-
+            Update();
         }
 
         private void Search_TextChanged(object sender, TextChangedEventArgs e)
@@ -159,6 +159,14 @@ namespace Anvarov41Razmer
         {
             if(ProductListView.SelectedIndex >= 0)
             {
+                List<Order> allOrder = Anvarov41Entities.GetContext().Order.ToList();
+                List<int> allOrderId = new List<int>();
+                foreach (var p in allOrder.Select(x => $"{x.OrderID}").ToList())
+                {
+                    allOrderId.Add(Convert.ToInt32(p));
+                }
+
+                newOrderId = allOrderId.Max() + 1;
                 var prod = ProductListView.SelectedItem as Product;
                 
                 //int newOrderID = selectedOrderProducts.Last().Order.OrderID;
